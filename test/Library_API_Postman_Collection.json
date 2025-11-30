@@ -1,0 +1,834 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Library Book Management API",
+		"description": "Koleksi lengkap endpoint untuk API Manajemen Buku Perpustakaan dengan arsitektur MVC dan 6 Design Patterns",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "🏠 Root",
+			"item": [
+				{
+					"name": "Get API Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": ["{{base_url}}"],
+							"path": [""]
+						},
+						"description": "Mendapatkan informasi dasar tentang API"
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						},
+						"description": "Cek status kesehatan API"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📚 Books",
+			"item": [
+				{
+					"name": "Get All Books",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books"]
+						},
+						"description": "Mendapatkan daftar semua buku"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Books (with Pagination)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books?page=1&per_page=5",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Mendapatkan daftar buku dengan pagination"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Books by Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books?category=Technology",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books"],
+							"query": [
+								{
+									"key": "category",
+									"value": "Technology"
+								}
+							]
+						},
+						"description": "Filter buku berdasarkan kategori"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Books",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books?search=Python",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books"],
+							"query": [
+								{
+									"key": "search",
+									"value": "Python"
+								}
+							]
+						},
+						"description": "Mencari buku berdasarkan judul atau penulis"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Book by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books", "1"]
+						},
+						"description": "Mendapatkan detail buku berdasarkan ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Book by ISBN",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books/isbn/978-979-1227-01-3",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books", "isbn", "978-979-1227-01-3"]
+						},
+						"description": "Mendapatkan detail buku berdasarkan ISBN"
+					},
+					"response": []
+				},
+				{
+					"name": "Check Book Availability",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books/1/availability",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books", "1", "availability"]
+						},
+						"description": "Cek ketersediaan buku untuk dipinjam"
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Book",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Flask Web Development\",\n    \"author\": \"Miguel Grinberg\",\n    \"isbn\": \"978-1-4919-9173-2\",\n    \"category\": \"Technology\",\n    \"quantity\": 3,\n    \"description\": \"Developing Web Applications with Python\",\n    \"published_year\": 2018,\n    \"publisher\": \"O'Reilly Media\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/books",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books"]
+						},
+						"description": "Menambahkan buku baru ke perpustakaan"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Book (Minimal Data)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Learning Python\",\n    \"author\": \"Mark Lutz\",\n    \"isbn\": \"978-1-4493-5573-9\",\n    \"category\": \"Technology\",\n    \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/books",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books"]
+						},
+						"description": "Menambahkan buku baru dengan data minimal (hanya field wajib)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Book",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Flask Web Development - 2nd Edition\",\n    \"quantity\": 5,\n    \"description\": \"Updated edition with new features\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/books/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books", "1"]
+						},
+						"description": "Mengupdate informasi buku (partial update)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Book (Soft Delete)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books", "1"]
+						},
+						"description": "Menghapus buku (soft delete - is_active = false)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📖 Loans",
+			"item": [
+				{
+					"name": "Get All Loans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/loans",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans"]
+						},
+						"description": "Mendapatkan daftar semua peminjaman"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Loans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/loans?status=borrowed",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans"],
+							"query": [
+								{
+									"key": "status",
+									"value": "borrowed"
+								}
+							]
+						},
+						"description": "Mendapatkan daftar peminjaman yang masih aktif"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Returned Loans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/loans?status=returned",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans"],
+							"query": [
+								{
+									"key": "status",
+									"value": "returned"
+								}
+							]
+						},
+						"description": "Mendapatkan daftar peminjaman yang sudah dikembalikan"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Overdue Loans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/loans/overdue",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans", "overdue"]
+						},
+						"description": "Mendapatkan daftar peminjaman yang terlambat"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Loans by Borrower",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/loans?borrower=Budi",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans"],
+							"query": [
+								{
+									"key": "borrower",
+									"value": "Budi"
+								}
+							]
+						},
+						"description": "Filter peminjaman berdasarkan nama peminjam"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Loan by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/loans/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans", "1"]
+						},
+						"description": "Mendapatkan detail peminjaman berdasarkan ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Loan (Borrow Book)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"book_id\": 2,\n    \"borrower_name\": \"John Doe\",\n    \"borrower_email\": \"john.doe@email.com\",\n    \"borrower_phone\": \"081234567899\",\n    \"due_date\": \"2025-12-15\",\n    \"notes\": \"Peminjaman untuk tugas kuliah\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/loans",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans"]
+						},
+						"description": "Membuat peminjaman baru (meminjam buku)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Loan (Minimal Data)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"book_id\": 4,\n    \"borrower_name\": \"Jane Smith\",\n    \"due_date\": \"2025-12-20\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/loans",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans"]
+						},
+						"description": "Membuat peminjaman dengan data minimal"
+					},
+					"response": []
+				},
+				{
+					"name": "Return Book",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"notes\": \"Buku dikembalikan dalam kondisi baik\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/loans/1/return",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans", "1", "return"]
+						},
+						"description": "Mengembalikan buku yang dipinjam"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Loan",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"due_date\": \"2025-12-25\",\n    \"notes\": \"Diperpanjang 1 minggu\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/loans/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans", "1"]
+						},
+						"description": "Mengupdate informasi peminjaman (perpanjang, dll)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Loan",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/loans/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans", "1"]
+						},
+						"description": "Menghapus data peminjaman"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📊 Statistics",
+			"item": [
+				{
+					"name": "Get All Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/statistics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "statistics"]
+						},
+						"description": "Mendapatkan semua statistik perpustakaan"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Books Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/statistics/books",
+							"host": ["{{base_url}}"],
+							"path": ["api", "statistics", "books"]
+						},
+						"description": "Mendapatkan statistik buku (total, tersedia, dipinjam)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Loans Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/statistics/loans",
+							"host": ["{{base_url}}"],
+							"path": ["api", "statistics", "loans"]
+						},
+						"description": "Mendapatkan statistik peminjaman"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/statistics/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "statistics", "categories"]
+						},
+						"description": "Mendapatkan statistik per kategori buku"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "❌ Error Testing",
+			"item": [
+				{
+					"name": "Get Non-existent Book",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books/9999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books", "9999"]
+						},
+						"description": "Test error handling - buku tidak ditemukan"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Book - Missing Required Fields",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Incomplete Book\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/books",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books"]
+						},
+						"description": "Test validasi - field wajib tidak lengkap"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Book - Duplicate ISBN",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Duplicate Book\",\n    \"author\": \"Test Author\",\n    \"isbn\": \"978-979-1227-01-3\",\n    \"category\": \"Fiction\",\n    \"quantity\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/books",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books"]
+						},
+						"description": "Test validasi - ISBN sudah ada"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Book - Invalid ISBN Format",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Invalid ISBN Book\",\n    \"author\": \"Test Author\",\n    \"isbn\": \"invalid-isbn\",\n    \"category\": \"Fiction\",\n    \"quantity\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/books",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books"]
+						},
+						"description": "Test validasi - format ISBN tidak valid"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Loan - Book Not Available",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"book_id\": 9999,\n    \"borrower_name\": \"Test User\",\n    \"due_date\": \"2025-12-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/loans",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans"]
+						},
+						"description": "Test error - buku tidak tersedia"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Loan - Invalid Date",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"book_id\": 2,\n    \"borrower_name\": \"Test User\",\n    \"due_date\": \"2020-01-01\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/loans",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans"]
+						},
+						"description": "Test validasi - tanggal kembali di masa lalu"
+					},
+					"response": []
+				},
+				{
+					"name": "Return Already Returned Book",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/loans/6/return",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans", "6", "return"]
+						},
+						"description": "Test error - buku sudah dikembalikan"
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/invalid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invalid"]
+						},
+						"description": "Test 404 - endpoint tidak ada"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🔄 Workflow Tests",
+			"item": [
+				{
+					"name": "1. Create New Book",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Workflow Book\",\n    \"author\": \"Workflow Author\",\n    \"isbn\": \"978-0-00-000000-1\",\n    \"category\": \"Testing\",\n    \"quantity\": 2,\n    \"description\": \"Book for testing complete workflow\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/books",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books"]
+						},
+						"description": "Step 1: Buat buku baru untuk workflow test"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Check Book Created",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books/isbn/978-0-00-000000-1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books", "isbn", "978-0-00-000000-1"]
+						},
+						"description": "Step 2: Verifikasi buku berhasil dibuat"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Borrow the Book",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"book_id\": 16,\n    \"borrower_name\": \"Workflow Tester\",\n    \"borrower_email\": \"workflow@test.com\",\n    \"due_date\": \"2025-12-31\",\n    \"notes\": \"Workflow testing loan\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/loans",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans"]
+						},
+						"description": "Step 3: Pinjam buku (ganti book_id sesuai yang dibuat)"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Check Book Availability Decreased",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books/16/availability",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books", "16", "availability"]
+						},
+						"description": "Step 4: Cek ketersediaan buku berkurang"
+					},
+					"response": []
+				},
+				{
+					"name": "5. Return the Book",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"notes\": \"Returned in good condition\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/loans/9/return",
+							"host": ["{{base_url}}"],
+							"path": ["api", "loans", "9", "return"]
+						},
+						"description": "Step 5: Kembalikan buku (ganti loan_id sesuai yang dibuat)"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Check Book Availability Restored",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/books/16/availability",
+							"host": ["{{base_url}}"],
+							"path": ["api", "books", "16", "availability"]
+						},
+						"description": "Step 6: Cek ketersediaan buku kembali normal"
+					},
+					"response": []
+				},
+				{
+					"name": "7. Check Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/statistics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "statistics"]
+						},
+						"description": "Step 7: Lihat statistik keseluruhan"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
