@@ -1,0 +1,55 @@
+@startuml PostBook_Sequence
+skinparam backgroundColor #FFFFFF
+skinparam sequenceArrowColor #2F4858
+skinparam sequenceBoxBorderColor #2F4858
+skinparam sequenceParticipantBorderColor #2F4858
+skinparam sequenceParticipantBackgroundColor #E8F1F5
+
+actor Client
+participant "BookController" as Controller
+participant "BookValidationStrategy" as Validator
+participant "BookService" as Service
+participant "ModelFactory" as Factory
+participant "BookRepository" as Repo
+participant "EventSubject" as Subject
+participant "ActivityLogger" as Logger
+
+Client -> Controller: POST /api/books {data}
+activate Controller
+
+Controller -> Service: create_book(data)
+activate Service
+
+Service -> Validator: validate(data)
+activate Validator
+Validator --> Service: (is_valid, errors)
+deactivate Validator
+
+alt not valid
+  Service --> Controller: {success: false, errors}
+  deactivate Service
+  Controller --> Client: 400 Bad Request
+  deactivate Controller
+else valid
+  Service -> Factory: create_book(data)
+  activate Factory
+  Factory --> Service: Book
+  deactivate Factory
+
+  Service -> Repo: save(book)
+  activate Repo
+  Repo --> Service: Book (persisted)
+  deactivate Repo
+
+  Service -> Subject: notify(BOOK_CREATED, book)
+  activate Subject
+  Subject -> Logger: update(BOOK_CREATED, book)
+  deactivate Subject
+
+  Service --> Controller: {success: true, data}
+  deactivate Service
+  Controller --> Client: 201 Created
+  deactivate Controller
+end
+
+@enduml

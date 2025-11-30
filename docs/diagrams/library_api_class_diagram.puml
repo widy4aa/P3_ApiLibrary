@@ -1,0 +1,203 @@
+@startuml LibraryAPI_ClassDiagram
+' Title
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam ArrowColor #2F4858
+skinparam ClassBorderColor #2F4858
+skinparam ClassBackgroundColor #E8F1F5
+skinparam NoteBackgroundColor #FFF7E6
+skinparam NoteBorderColor #B07D00
+
+package "Controllers" #DDFFDD {
+  class BookController as "book_controller.py" {
+    +get_all_books()
+    +get_book_by_isbn(isbn)
+    +search_books()
+    +get_categories()
+    +get_books_by_category(category)
+    +get_book(id)
+    +check_availability(id)
+    +create_book(data)
+    +update_book(id, data)
+    +delete_book(id)
+  }
+  class LoanController as "loan_controller.py" {
+    +get_all_loans(filters)
+    +get_loan(id)
+    +create_loan(data)
+    +update_loan(id, data)
+    +return_book(id)
+    +delete_loan(id)
+    +get_overdue_loans()
+    +get_loans_by_borrower(name)
+    +get_borrowed_loans()
+  }
+  class StatisticsController as "statistics_controller.py" {
+    +get_statistics()
+    +get_category_stats()
+  }
+}
+
+package "Services (Facade)" #DDDDFF {
+  class BookService {
+    +get_all_books(filters)
+    +get_book_by_id(id)
+    +search_books(keyword)
+    +get_categories()
+    +check_availability(id)
+    +create_book(data)
+    +update_book(id, data)
+    +delete_book(id)
+  }
+  class LoanService {
+    +get_all_loans(filters)
+    +get_loan_by_id(id)
+    +create_loan(data)
+    +return_book(id, return_date)
+    +get_overdue_loans()
+    +get_loans_by_borrower(name)
+  }
+  class StatisticsService {
+    +get_statistics()
+    +get_category_stats()
+  }
+}
+
+package "Repositories (Adapter)" #FFEEDD {
+  interface BaseRepository {
+    +find_all(filters)
+    +find_by_id(id)
+    +save(entity)
+    +update(entity)
+    +delete(id)
+  }
+  class BookRepository {
+    +find_all(filters)
+    +find_by_id(id)
+    +find_by_isbn(isbn)
+    +search(keyword)
+    +categories()
+    +save(book)
+    +update(book)
+    +delete(id)
+  }
+  class LoanRepository {
+    +find_all(filters)
+    +find_by_id(id)
+    +save(loan)
+    +update(loan)
+    +delete(id)
+    +overdue()
+    +by_borrower(name)
+  }
+}
+
+package "Validators (Strategy)" #FFF4F4 {
+  interface ValidationStrategy {
+    +validate(data)
+  }
+  class BookValidationStrategy {
+    +validate(data, is_update)
+  }
+  class LoanValidationStrategy {
+    +validate(data)
+  }
+}
+
+package "Factory (Creational)" #F0FFF0 {
+  class ModelFactory {
+    +create_book(data)
+    +create_loan(data)
+    +update_book(book, data)
+  }
+}
+
+package "Observers (Behavioral)" #F4F9FF {
+  interface EventObserver {
+    +update(event_type, data)
+    +get_subscribed_events()
+  }
+  class EventSubject {
+    +attach(observer)
+    +detach(observer)
+    +notify(event_type, data)
+  }
+  class ActivityLogger {
+    +update(event_type, data)
+  }
+}
+
+package "Database (Singleton)" #FFF0F5 {
+  class DatabaseConnection {
+    +get_db()
+    +init_app(app)
+  }
+}
+
+package "Models" #EEFFEE {
+  class Book {
+    id: int
+    title: str
+    author: str
+    isbn: str
+    year: int
+    category: str
+    stock: int
+    available: int
+    created_at: datetime
+    updated_at: datetime
+    is_deleted: bool
+    +to_dict()
+  }
+  class Loan {
+    id: int
+    book_id: int
+    borrower_name: str
+    loan_date: date
+    due_date: date
+    return_date: date
+    status: str
+    notes: text
+    created_at: datetime
+    +mark_as_returned(return_date)
+    +is_overdue(): bool
+    +to_dict()
+  }
+}
+
+' Relationships
+BookController --> BookService
+LoanController --> LoanService
+StatisticsController --> StatisticsService
+
+BookService --> BookRepository
+BookService --> ModelFactory
+BookService --> BookValidationStrategy
+BookService --> EventSubject
+
+LoanService --> LoanRepository
+LoanService --> ModelFactory
+LoanService --> LoanValidationStrategy
+LoanService --> EventSubject
+
+BookRepository ..|> BaseRepository
+LoanRepository ..|> BaseRepository
+
+EventSubject o--> ActivityLogger : notifies
+
+Book "1" o-- "*" Loan : has
+
+DatabaseConnection --> BookRepository : SQLAlchemy Session
+DatabaseConnection --> LoanRepository : SQLAlchemy Session
+
+' Notes
+note right of Loan
+status ∈ {borrowed, returned, overdue}
+notes: optional
+end note
+
+note left of DatabaseConnection
+Singleton: one SQLAlchemy instance
+end note
+
+@enduml
