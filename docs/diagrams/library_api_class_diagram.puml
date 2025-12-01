@@ -40,6 +40,10 @@ package "Controllers" #DDFFDD {
 
 package "Services (Facade)" #DDDDFF {
   class BookService {
+    -repository: BookRepository
+    -factory: ModelFactory
+    -validator: BookValidationStrategy
+    -event_subject: EventSubject
     +get_all_books(filters)
     +get_book_by_id(id)
     +search_books(keyword)
@@ -50,6 +54,11 @@ package "Services (Facade)" #DDDDFF {
     +delete_book(id)
   }
   class LoanService {
+    -loan_repository: LoanRepository
+    -book_repository: BookRepository
+    -factory: ModelFactory
+    -validator: LoanValidationStrategy
+    -event_subject: EventSubject
     +get_all_loans(filters)
     +get_loan_by_id(id)
     +create_loan(data)
@@ -58,8 +67,10 @@ package "Services (Facade)" #DDDDFF {
     +get_loans_by_borrower(name)
   }
   class StatisticsService {
-    +get_statistics()
-    +get_category_stats()
+    -book_repository: BookRepository
+    -loan_repository: LoanRepository
+    +get_library_statistics()
+    +get_category_statistics()
   }
 }
 
@@ -70,16 +81,20 @@ package "Repositories (Adapter)" #FFEEDD {
     +save(entity)
     +update(entity)
     +delete(id)
+    +count(filters)
   }
   class BookRepository {
     +find_all(filters)
     +find_by_id(id)
     +find_by_isbn(isbn)
     +search(keyword)
-    +categories()
+    +get_categories()
     +save(book)
     +update(book)
     +delete(id)
+    +hard_delete(id)
+    +count(filters)
+    +update_availability(book_id, delta)
   }
   class LoanRepository {
     +find_all(filters)
@@ -87,20 +102,41 @@ package "Repositories (Adapter)" #FFEEDD {
     +save(loan)
     +update(loan)
     +delete(id)
-    +overdue()
-    +by_borrower(name)
+    +count(filters)
+    +find_active_by_book(book_id)
+    +find_overdue_loans()
+    +find_by_borrower(name)
+    +get_loan_statistics()
   }
 }
 
 package "Validators (Strategy)" #FFF4F4 {
   interface ValidationStrategy {
     +validate(data)
+    #_check_required_fields(data, fields)
+    #_check_string_length(value, name, min, max)
   }
   class BookValidationStrategy {
+    +REQUIRED_FIELDS_CREATE: List
+    +MAX_TITLE_LENGTH: int
+    +MAX_AUTHOR_LENGTH: int
+    +MAX_ISBN_LENGTH: int
+    +MAX_CATEGORY_LENGTH: int
+    +MIN_YEAR: int
     +validate(data, is_update)
+    -_validate_isbn(isbn, book_id)
+    -_validate_year(year)
+    -_validate_stock(stock)
   }
   class LoanValidationStrategy {
+    +REQUIRED_FIELDS: List
+    +MAX_BORROWER_NAME_LENGTH: int
+    +MAX_LOAN_DAYS: int
     +validate(data)
+    +validate_return(loan_id)
+    -_validate_book(book_id)
+    -_validate_date(date_str, field_name)
+    -_validate_loan_duration(loan_date, due_date)
   }
 }
 
@@ -118,50 +154,78 @@ package "Observers (Behavioral)" #F4F9FF {
     +get_subscribed_events()
   }
   class EventSubject {
+    -_observers: Dict
     +attach(observer)
     +detach(observer)
     +notify(event_type, data)
+    +get_observer_count(event_type)
   }
   class ActivityLogger {
+    -log_file: str
+    -logger: Logger
     +update(event_type, data)
+    +get_subscribed_events()
+    +log_custom(message, level)
+    -_setup_logger()
+    -_format_message(event_type, data)
+  }
+  class EventType <<enumeration>> {
+    BOOK_CREATED
+    BOOK_UPDATED
+    BOOK_DELETED
+    LOAN_CREATED
+    LOAN_RETURNED
+    SYSTEM_ERROR
+    SYSTEM_WARNING
   }
 }
 
 package "Database (Singleton)" #FFF0F5 {
   class DatabaseConnection {
+    -_instance: DatabaseConnection
+    -_lock: Lock
+    -db: SQLAlchemy
+    -_initialized: bool
+    +__new__()
     +get_db()
     +init_app(app)
+    +create_tables(app)
+    +drop_tables(app)
   }
 }
 
 package "Models" #EEFFEE {
   class Book {
-    id: int
-    title: str
-    author: str
-    isbn: str
-    year: int
-    category: str
-    stock: int
-    available: int
-    created_at: datetime
-    updated_at: datetime
-    is_deleted: bool
+    -id: int
+    -title: str
+    -author: str
+    -isbn: str
+    -year: int
+    -category: str
+    -stock: int
+    -available: int
+    -created_at: datetime
+    -updated_at: datetime
+    -is_deleted: bool
+    +__init__(title, author, isbn, year, category, stock)
     +to_dict()
+    +__repr__()
   }
   class Loan {
-    id: int
-    book_id: int
-    borrower_name: str
-    loan_date: date
-    due_date: date
-    return_date: date
-    status: str
-    notes: text
-    created_at: datetime
+    -id: int
+    -book_id: int
+    -borrower_name: str
+    -loan_date: date
+    -due_date: date
+    -return_date: date
+    -status: str
+    -notes: text
+    -created_at: datetime
+    +__init__(book_id, borrower_name, loan_date, due_date, notes)
     +mark_as_returned(return_date)
     +is_overdue(): bool
     +to_dict()
+    +__repr__()
   }
 }
 
@@ -183,7 +247,13 @@ LoanService --> EventSubject
 BookRepository ..|> BaseRepository
 LoanRepository ..|> BaseRepository
 
+BookValidationStrategy ..|> ValidationStrategy
+LoanValidationStrategy ..|> ValidationStrategy
+
+ActivityLogger ..|> EventObserver
+
 EventSubject o--> ActivityLogger : notifies
+EventSubject ..> EventType : uses
 
 Book "1" o-- "*" Loan : has
 
